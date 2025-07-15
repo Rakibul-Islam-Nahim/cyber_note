@@ -18,10 +18,6 @@ Exploit XML parsers to disclose internal files or SSRF attacks.
 
 ---
 
----
-
----
-
 # 2. Authentication and Authorization Issues 🔐
 
 ## 2.1 Broken Authentication :
@@ -35,10 +31,6 @@ Access resources or actions without proper permissions (e.g., IDOR, privilege es
 ## 2.3 Account Takeover (ATO) :
 
 Gain control over another user’s account using insecure flows or token manipulation.
-
----
-
----
 
 ---
 
@@ -58,10 +50,6 @@ Client-side JS processes untrusted input and executes it dynamically.
 
 ---
 
----
-
----
-
 # 4. Information Disclosure 📚
 
 ## 4.1 Sensitive Data Exposure :
@@ -78,10 +66,6 @@ Accidental leaks of .git, backup files, or source files on the server.
 
 ---
 
----
-
----
-
 # 5. File Upload Vulnerabilities 📤
 
 ## 5.1 Unrestricted File Upload :
@@ -91,10 +75,6 @@ Upload dangerous files (e.g., web shells) due to poor validation
 ## 5.2 Content-Type Bypass :
 
 Upload files by spoofing MIME types or extensions (e.g., image.php.jpg).
-
----
-
----
 
 ---
 
@@ -114,10 +94,6 @@ Admin interfaces accessible without authentication or rate limiting.
 
 ---
 
----
-
----
-
 # 7. Vulnerable Components 📦
 
 ## 7.1 Outdated Libraries/Plugins :
@@ -127,10 +103,6 @@ Known vulnerabilities in old versions of software, CMS plugins, JS libraries.
 ## 7.2 CVE Exploitation :
 
 Use public exploits against unpatched components.
-
----
-
----
 
 ---
 
@@ -150,10 +122,6 @@ Reuse or stack discount codes due to poor validation.
 
 ---
 
----
-
----
-
 # 9. Cross-Site Request Forgery (CSRF) 🌐
 
 ## 9.1 CSRF on Critical Actions :
@@ -162,19 +130,11 @@ Trick users into performing actions without consent by abusing session cookies.
 
 ---
 
----
-
----
-
 # 10. Server-Side Request Forgery (SSRF) 🌍
 
 ## 10.1 SSRF to Internal Systems :
 
 Force server to fetch internal URLs (e.g., metadata endpoints, localhost).
-
----
-
----
 
 ---
 
@@ -190,10 +150,6 @@ Access or guess valid session or API tokens.
 
 ---
 
----
-
----
-
 # 12. Client-Side Attacks 📡
 
 ## 12.1 Clickjacking :
@@ -206,10 +162,6 @@ Improper CORS policies allow cross-origin data leaks or access.
 
 ---
 
----
-
----
-
 # 13. Local and Remote File Inclusion 📁
 
 ## 13.1 Local File Inclusion (LFI) :
@@ -219,10 +171,6 @@ Read local server files using directory traversal (e.g., ../../etc/passwd).
 ## 13.2 Remote File Inclusion (RFI) :
 
 Load external malicious scripts into the application.
-
----
-
----
 
 ---
 
