@@ -2,4 +2,6 @@
 
 ---
 
-> ## SQL Injection(SQLi) : Inject malicious SQL queries to access, modify, or delete database data.
+## 1.1 SQL Injection(SQLi) :
+
+Inject malicious SQL queries to access, modify, or delete database data.
