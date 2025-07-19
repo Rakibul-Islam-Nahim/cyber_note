@@ -1,3 +1,80 @@
+# Table of Contents
+
+## 1. Injection Attacks 💉
+
+- [1.1 SQL Injection (SQLi)](#11-sql-injectionsqli-)
+- [1.2 Command Injection](#12-command-injection-)
+- [1.3 LDAP Injection](#13-ldap-injection-)
+- [1.4 XML External Entity (XXE)](#14-xml-external-entity-xxe-)
+
+## 2. Authentication and Authorization Issues 🔐
+
+- [2.1 Broken Authentication](#21-broken-authentication-)
+- [2.2 Broken Access Control](#22-broken-access-control-)
+- [2.3 Account Takeover (ATO)](#23-account-takeover-ato-)
+
+## 3. Cross-Site Scripting (XSS) 🛠️
+
+- [3.1 Reflected XSS](#31-reflected-xss-)
+- [3.2 Stored XSS](#32-stored-xss-)
+- [3.3 DOM-Based XSS](#33-dom-based-xss-)
+
+## 4. Information Disclosure 📚
+
+- [4.1 Sensitive Data Exposure](#41-sensitive-data-exposure-)
+- [4.2 Server Error Messages](#42-server-error-messages-)
+- [4.3 Source Code Disclosure](#43-source-code-disclosure-)
+
+## 5. File Upload Vulnerabilities 📤
+
+- [5.1 Unrestricted File Upload](#51-unrestricted-file-upload-)
+- [5.2 Content-Type Bypass](#52-content-type-bypass-)
+
+## 6. Security Misconfigurations 👨‍🔧
+
+- [6.1 Default Credentials](#61-default-credentials-)
+- [6.2 Directory Listing Enabled](#62-directory-listing-enabled-)
+- [6.3 Open Admin Panels](#63-open-admin-panels-)
+
+## 7. Vulnerable Components 📦
+
+- [7.1 Outdated Libraries/Plugins](#71-outdated-librariesplugins-)
+- [7.2 CVE Exploitation](#72-cve-exploitation-)
+
+## 8. Business Logic Vulnerabilities 📈
+
+- [8.1 Logic Flaws](#81-logic-flaws-)
+- [8.2 Price Manipulation](#82-price-manipulation-)
+- [8.3 Coupon Abuse](#83-coupon-abuse-)
+
+## 9. Cross-Site Request Forgery (CSRF) 🌐
+
+- [9.1 CSRF on Critical Actions](#91-csrf-on-critical-actions-)
+
+## 10. Server-Side Request Forgery (SSRF) 🌍
+
+- [10.1 SSRF to Internal Systems](#101-ssrf-to-internal-systems-)
+
+## 11. Token-Related Vulnerabilities 🔑
+
+- [11.1 Insecure JWT Handling](#111-insecure-jwt-handling-)
+- [11.2 Token Reuse or Prediction](#112-token-reuse-or-prediction-)
+
+## 12. Client-Side Attacks 📡
+
+- [12.1 Clickjacking](#121-clickjacking-)
+- [12.2 CORS Misconfigurations](#122-cors-misconfigurations-)
+
+## 13. Local and Remote File Inclusion 📁
+
+- [13.1 Local File Inclusion (LFI)](#131-local-file-inclusion-lfi-)
+- [13.2 Remote File Inclusion (RFI)](#132-remote-file-inclusion-rfi-)
+
+## 14. Rate Limiting & DoS ⏱️
+
+- [14.1 Lack of Rate Limiting](#141-lack-of-rate-limiting-)
+- [14.2 Resource Exhaustion](#142-resource-exhaustion-)
+
 # 1. Injection Attacks 💉
 
 ## 1.1 SQL Injection(SQLi) :
