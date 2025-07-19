@@ -602,8 +602,38 @@ A vulnerability allowing attackers to include and execute remote files on the se
 
 ## 14.1 Lack of Rate Limiting :
 
-Brute-force login, password reset, or OTP endpoints without being blocked.
+Absence of controls to limit the number of requests a user or IP can make in a given time, allowing brute force or denial-of-service attacks.  
+**Discovery Path**:
+
+- Test repeated requests to login, password reset, or API endpoints rapidly
+- Use automated tools like `Burp Intruder`, `Hydra`, or `WFuzz` to send bursts of requests
+- Observe if account lockout, CAPTCHA, or throttling mechanisms activate
+- Monitor server response times and status codes during rapid requests
+- Check logs or application behavior for rate limit enforcement
+
+**Common Payloads / Techniques**:
+
+- Brute forcing credentials by sending thousands of login attempts
+- Performing password spraying attacks over multiple accounts
+- Flooding API endpoints to exhaust resources or cause service degradation
+- Testing absence of lockouts on failed attempts
+- Exploiting unlimited password reset or OTP request flows
 
 ## 14.2 Resource Exhaustion :
 
-Crash or slow down the app by sending huge payloads or excessive requests.
+Overloading a system by consuming excessive CPU, memory, disk space, or network bandwidth, leading to degraded performance or denial of service.  
+**Discovery Path**:
+
+- Send large or complex payloads to application endpoints to observe resource usage
+- Test for memory leaks or CPU spikes under high load using stress testing tools
+- Use fuzzers or automated scripts to bombard the server with requests or data
+- Monitor server metrics (CPU, RAM, disk I/O, network) during testing
+- Identify endpoints lacking input validation or rate limiting
+
+**Common Payloads / Techniques**:
+
+- Large file uploads or repeated upload attempts
+- Recursive or deeply nested inputs causing excessive processing
+- Slowloris-style slow HTTP requests
+- Flooding with simultaneous connections or requests
+- Exploiting poorly optimized database queries or code loops
