@@ -1,0 +1,17 @@
+The code for compile vulnerable C code is:
+gcc <c_file> -o <output_name> -fno-stack-protector -z execstack -no-pie -m32 -Wno-implicit-function-declaration
+
+
+Install i386 architecture to compile 32 bit binary file:
+sudo dpkg --add-architecture i386
+sudo apt update 
+sudo apt install -y gcc-multilib g++-multilib libc6-dev-i386
+sudo apt install -y build-essential make
+
+
+Check the binary file:
+checksec --file <binary>
+
+
+Important Python Library for starting:
+pip3 install pwntools pyelftools psutil typing_extensions tabulate
